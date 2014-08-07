@@ -1,0 +1,11 @@
+the vim plugin directory is indend to transfer between windows and Linux,
+but there are some different
+
+the files put under the .vim file is only used for linux
+because windows doesnot support pipe, the python compiler
+should use pymake.py instead.
+
+when copy plugin and settings from windows
+backup these files before replace the .vim directory
+then copy efm_filter.py to .vim/tools
+and python.vim to .vim/compiler

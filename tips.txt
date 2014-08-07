@@ -1,0 +1,9 @@
+VIM TIPS for daily usage
+1. jcommenter.vim - add comment for Class/Method easily, just use <M>_c key mapping
+2. java_getset.vim - generate java getter and setter quickly, just use <leader>_b<both setter and getter>
+3. JavaImp 
+	- use jar tf $JAVA_HOME/src.zip > jdk.jmplst
+	- set g:JavaImpPaths and point to the source dir and jmplst file located
+	- use :JIG to generate caches
+	- use :JI to insert statements that cursor pointing Type
+	- use :JIS to sort the import statements
