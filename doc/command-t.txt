@@ -108,6 +108,15 @@ by looking at the output of:
 
   :ruby puts "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
 
+Or, for very old versions of Ruby which don't define `RUBY_PATCHLEVEL`:
+
+  :ruby puts RUBY_VERSION
+
+Some Linux distributions package Ruby development tools separately from Ruby
+itself; if you're using such a system you may need to install the "ruby-dev",
+"ruby-devel" or similar package using your system's package manager in order
+to build Command-T.
+
 A suitable Ruby environment for Windows can be installed using the Ruby
 1.8.7-p299 RubyInstaller available at:
 
@@ -302,6 +311,17 @@ repository with:
 
   su -c 'yum install vim-command-t'
 
+                                                       *command-t-appstream*
+AppStream Metadata ~
+
+When preparing a Command-T package for distribution on Linux using Gnome
+Software or another AppStream compatible application, there is a metafile in
+appstream directory.
+
+You can find more about AppStream specification at:
+
+  http://www.freedesktop.org/software/appstream/docs/
+
 
 TROUBLE-SHOOTING                                *command-t-trouble-shooting*
 
@@ -311,12 +331,11 @@ linked against at compile time. For example, if one is 32-bit and the other is
 64-bit, or one is from the Ruby 1.9 series and the other is from the 1.8
 series, then the plug-in is not likely to work.
 
-As such, on OS X, I recommend using the standard Ruby that comes with the
-system (currently 1.8.7) along with the latest version of MacVim (currently
-version 7.3). If you wish to use custom builds of Ruby or of MacVim (not
-recommmended) then you will have to take extra care to ensure that the exact
-same Ruby environment is in effect when building Ruby, Vim and the Command-T
-extension.
+On OS X, Apple tends to change the version of Ruby that comes with the system
+with each major release. See |command-t-requirements| above for details about
+specific versions. If you wish to use custom builds of Ruby or of MacVim then
+you will have to take extra care to ensure that the exact same Ruby
+environment is in effect when building Ruby, Vim and the Command-T extension.
 
 For Windows, the following combination is known to work:
 
@@ -341,6 +360,21 @@ extension and to Vim itself when they were built. If the Ruby-related
 flags or architecture flags are different then it is likely that something
 has changed in your Ruby environment and the extension may not work until
 you eliminate the discrepancy.
+
+From inside Vim, you can confirm the version of Ruby that it is using by
+issuing this command:
+
+  :ruby puts "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
+
+Or, for very old versions of Ruby which don't define `RUBY_PATCHLEVEL`:
+
+  :ruby puts RUBY_VERSION
+
+Finally, beware that if you change your installation method for Command-T (for
+example, switching from one plugin manager to another) you should verify that
+you remove all of the files installed by the previous installation method; if
+you fail to do this, Vim may end up executing the old code, invalidating all
+your attempts to get Vim and Command-T using the same version of Ruby.
 
 
 USAGE                                           *command-t-usage*
@@ -573,6 +607,10 @@ Following is a list of all available options:
         work on systems without the tool or with an incompatible version of
         the tool.
 
+      - "git": uses `git ls-files` to quickly produce a list of files; when
+        Git isn't available or the path being searched is not inside a Git
+        repository falls back to "find".
+
       - "watchman": uses Watchman (https://github.com/facebook/watchman) if
         available; otherwise falls back to "find". Note that this scanner is
         intended for use with very large hierarchies (hundreds of thousands of
@@ -580,6 +618,34 @@ Following is a list of all available options:
         entirely delegated to Watchman; this means that settings which
         Command-T would usually consult, such as 'wildignore' and
         |g:CommandTScanDotDirectories| are ignored.
+
+                                               *g:CommandTTraverseSCM*
+  |g:CommandTTraverseSCM|                        string (default: 'file')
+
+      Instructs Command-T how to chose a root path when opening a file finder
+      without an explicit path argument. Possible values are:
+
+      - "file": starting from the file currently being edited, traverse
+        upwards through the filesystem hierarchy until you find an SCM root
+        (as indicated by the presence of a ".git", ".hg" or similar directory)
+        and use that as the base path. If no such root is found, fallback to
+        using Vim's present working directory as a root. The list of SCM
+        directories that Command-T uses to detect an SCM root can be
+        customized with the |g:CommandTSCMDirectories| option.
+
+      - "dir": traverse upwards looking for an SCM root just like the "file"
+        setting (above), but instead of starting from the file currently being
+        edited, start from Vim's present working directory instead.
+
+      - "pwd": use Vim's present working directory as a root (ie. attempt no
+        traversal).
+
+                                               *g:CommandTSCMDirectories*
+  |g:CommandTSCMDirectories|    string (default: '.git,.hg,.svn,.bzr,_darcs')
+
+      The marker directories that Command-T will use to identify SCM roots
+      during traversal (see |g:CommandTTraverseSCM| above).
+
 
                                                *g:CommandTMinHeight*
   |g:CommandTMinHeight|                          number (default: 0)
@@ -712,7 +778,7 @@ Following is a list of all available options:
 
           function! GotoOrOpen(...)
             for file in a:000
-              if bufexists(file)
+              if bufwinnr(file) != -1
                 exec "sb " . file
               else
                 exec "tabe " . file
@@ -723,6 +789,8 @@ Following is a list of all available options:
           command! -nargs=+ GotoOrOpen call GotoOrOpen("<args>")
 
           let g:CommandTAcceptSelectionTabCommand = 'GotoOrOpen'
+
+      For a slightly more comprehensive example, see: https://wt.pe/e
 
                                         *g:CommandTAcceptSelectionSplitCommand*
   |g:CommandTAcceptSelectionSplitCommand| string (default: 'sp')
@@ -829,10 +897,10 @@ settings can be used to control behavior:
       Vim's |'wildignore'| setting is used to determine which files should be
       excluded from listings. This is a comma-separated list of glob patterns.
       It defaults to the empty string, but common settings include "*.o,*.obj"
-      (to exclude object files) or ".git,.svn" (to exclude SCM metadata
-      directories). For example:
+      (to exclude object files) or "**/.git/*,**/.svn/*" (to exclude SCM
+      metadata directories). For example:
 
-        :set wildignore+=*.o,*.obj,.git
+        :set wildignore+=*.o,*.obj
 
       A pattern such as "vendor/rails/**" would exclude all files and
       subdirectories inside the "vendor/rails" directory (relative to
@@ -844,6 +912,30 @@ settings can be used to control behavior:
       changing your global |'wildignore'| setting, you can use the
       |g:CommandTWildIgnore| setting to apply an override that takes effect
       only during Command-T searches.
+
+      Note that there are some differences among file scanners
+      (see |g:CommandTFileScanner|) with respect to 'wildignore' handling:
+
+      - The default "ruby" scanner explores the filesystem recursively using a
+        depth-first search, and any directory (or subdirectory) which matches
+        the 'wildignore' pattern is not explored. So, if your 'wildignore'
+        contains "node_modules" then that entire sub-hierarchy will be
+        ignored. Additionally, wildcard patterns like "node_modules/**" or
+        "**/node_modules/*" will cause the entire sub-hierarchy to be ignored.
+
+      - The "git" and "find" scanners apply 'wildignore' filtering only after
+        completing their scans. Filtering only applies to files and not
+        directories. This means that in the "node_modules" example case, the
+        "node_modules" directory is not considered itself, and when we examine
+        a file like "node_modules/foo/bar" the "node_modules" pattern does
+        not match it (because "bar" does not match it). To exclude
+        any "node_modules" directory anywhere in the hierarchy and all of its
+        descendants we must use a pattern like "**/node_modules/*". To do this
+        only for a top-level "node_modules", use "node_modules/**".
+
+      - The "watchman" scanner is intended for use with massive hierarchies
+        where speed is of the utmost import, so it doesn't consult
+        'wildignore' at all.
 
 
 FAQ                                             *command-t-faq*
@@ -1020,19 +1112,22 @@ Command-T is written and maintained by Greg Hurrell <greg@hurrell.net>.
 Other contributors that have submitted patches include (in alphabetical
 order):
 
-  Andy Waite              Matthew Todd            Seth Fowler
+  Abhinav Gupta           Marcus Brito            Scott Bronson
+  Aleksandrs Ļedovskis    Marian Schubert         Seth Fowler
+  Andy Waite              Matthew Todd            Sherzod Gapirov
   Anthony Panozzo         Mike Lundy              Shlomi Fish
   Artem Nezvigin          Nadav Samet             Steven Moazami
-  Daniel Hahler           Nate Kane               Sung Pae
-  Felix Tjandrawibawa     Nicholas Alpi           Thomas Pelletier
-  Gary Bernhardt          Noon Silk               Ton van den Heuvel
-  Ivan Ukhov              Ole Petter Bang         Victor Hugo Borja
-  Jacek Wysocki           Paul Jolly              Vít Ondruch
-  Jeff Kreeftmeijer       Pavel Sergeev           Woody Peterson
-  Kevin Webster           Rainux Luo              Yan Pritzker
-  Lucas de Vries          Roland Puntaier         Yiding Jia
-  Marcus Brito            Ross Lagerwall          Zak Johnson
-  Marian Schubert         Scott Bronson
+  Ben Osheroff            Nate Kane               Sung Pae
+  Daniel Hahler           Nicholas Alpi           Thomas Pelletier
+  David Szotten           Noon Silk               Ton van den Heuvel
+  Emily Strickland        Ole Petter Bang         Victor Hugo Borja
+  Felix Tjandrawibawa     Patrick Hayes           Vít Ondruch
+  Gary Bernhardt          Paul Jolly              Woody Peterson
+  Ivan Ukhov              Pavel Sergeev           Yan Pritzker
+  Jacek Wysocki           Rainux Luo              Yiding Jia
+  Jeff Kreeftmeijer       Richard Feldman         Zak Johnson
+  Kevin Webster           Roland Puntaier
+  Lucas de Vries          Ross Lagerwall
 
 As this was the first Vim plug-in I had ever written I was heavily influenced
 by the design of the LustyExplorer plug-in by Stephen Bach, which I understand
@@ -1125,6 +1220,44 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
 HISTORY                                         *command-t-history*
+
+1.11.4 (4 November 2014)
+
+- fix infinite loop on Windows when |g:CommandTTraverseSCM| is set to a value
+  other than "pwd" (bug present since 1.11)
+- handle unwanted split edgecase when |'hidden'| is set, the current buffer is
+  modified, and it is visible in more than one window
+
+1.11.3 (10 October 2014)
+
+- ignore impromperly encoded filenames (patch from Sherzod Gapirov)
+- fix failure to update path when using |:cd| in conjunction with
+  |g:CommandTTraverseSCM| set to "pwd" (bug present since 1.11.2)
+
+1.11.2 (2 September 2014)
+
+- fix error while using Command-T outside of an SCM repo (bug present since
+  1.11.1)
+
+1.11.1 (29 August 2014)
+
+- compatibility fixes with Ruby 1.8.6 (patch from Emily Strickland)
+- compatibility fixes with Ruby 1.8.5
+- fix 'wildignore' being ignored (bug present since 1.11)
+- fix current working directory being ignored when |g:CommandTTraverseSCM| is
+  set to "pwd" (bug present since 1.11)
+- performance improvements
+
+1.11 (15 August 2014)
+
+- improve edge-case handling in match results window code (patches from
+  Richard Feldman)
+- add "git" file scanner (patch from Patrick Hayes)
+- speed-up when 'wildignore' is unset (patch from Patrick Hayes)
+- add |g:CommandTTraverseSCM| setting which anchors Command-T's file finder to
+  the nearest SCM directory (based on patches from David Szotten and Ben
+  Osheroff)
+- add AppStream metadata (patch from Vít Ondruch)
 
 1.10 (15 July 2014)
 

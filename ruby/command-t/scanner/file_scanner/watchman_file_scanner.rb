@@ -3,7 +3,6 @@
 
 require 'pathname'
 require 'socket'
-require 'command-t/vim'
 require 'command-t/vim/path_utilities'
 require 'command-t/scanner/file_scanner'
 require 'command-t/scanner/file_scanner/find_file_scanner'
@@ -20,43 +19,38 @@ module CommandT
       # requested path.
       class WatchmanUnavailable < RuntimeError; end
 
-      def paths
-        @paths[@path] ||= begin
-          ensure_cache_under_limit
-          sockname = Watchman::Utils.load(
-            %x{watchman --output-encoding=bser get-sockname}
-          )['sockname']
-          raise WatchmanUnavailable unless $?.exitstatus.zero?
+      def paths!
+        sockname = Watchman::Utils.load(
+          %x{watchman --output-encoding=bser get-sockname}
+        )['sockname']
+        raise WatchmanUnavailable unless $?.exitstatus.zero?
 
-          UNIXSocket.open(sockname) do |socket|
-            root = Pathname.new(@path).realpath.to_s
-            roots = Watchman::Utils.query(['watch-list'], socket)['roots']
-            if !roots.include?(root)
-              # this path isn't being watched yet; try to set up watch
-              result = Watchman::Utils.query(['watch', root], socket)
+        UNIXSocket.open(sockname) do |socket|
+          root = Pathname.new(@path).realpath.to_s
+          roots = Watchman::Utils.query(['watch-list'], socket)['roots']
+          if !roots.include?(root)
+            # this path isn't being watched yet; try to set up watch
+            result = Watchman::Utils.query(['watch', root], socket)
 
-              # root_restrict_files setting may prevent Watchman from working
-              raise WatchmanUnavailable if result.has_key?('error')
-            end
-
-            query = ['query', root, {
-              'expression' => ['type', 'f'],
-              'fields'     => ['name'],
-            }]
-            paths = Watchman::Utils.query(query, socket)
-
-            # could return error if watch is removed
-            raise WatchmanUnavailable if paths.has_key?('error')
-
-            @paths[@path] = paths['files']
+            # root_restrict_files setting may prevent Watchman from working
+            raise WatchmanUnavailable if result.has_key?('error')
           end
-        end
 
-        @paths[@path]
-      rescue Errno::ENOENT, WatchmanUnavailable
-        # watchman executable not present, or unable to fulfil request
-        super
+          query = ['query', root, {
+            'expression' => ['type', 'f'],
+            'fields'     => ['name'],
+          }]
+          paths = Watchman::Utils.query(query, socket)
+
+          # could return error if watch is removed
+          raise WatchmanUnavailable if paths.has_key?('error')
+
+          paths['files']
+        end
       end
+    rescue Errno::ENOENT, WatchmanUnavailable
+      # watchman executable not present, or unable to fulfil request
+      super
     end # class WatchmanFileScanner
   end # class FileScanner
 end # module CommandT

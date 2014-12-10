@@ -1,7 +1,16 @@
 # Copyright 2010-2014 Greg Hurrell. All rights reserved.
 # Licensed under the terms of the BSD 2-clause license.
 
-require 'mkmf'
+begin
+  require 'mkmf'
+rescue LoadError
+  puts <<-DOC.gsub(/^\s+/, '')
+    Unable to require "mkmf"; you may need to install Ruby development tools
+    (depending on your system, a "ruby-dev"/"ruby-devel" package or similar).
+    [exiting]
+  DOC
+  exit 1
+end
 
 def header(item)
   unless find_header(item)
@@ -18,8 +27,10 @@ header('string.h')
 
 # optional headers (for CommandT::Watchman::Utils)
 if have_header('fcntl.h') &&
+  have_header('stdint.h') &&
   have_header('sys/errno.h') &&
   have_header('sys/socket.h')
+  RbConfig::MAKEFILE_CONFIG['DEFS'] ||= ''
   RbConfig::MAKEFILE_CONFIG['DEFS'] += ' -DWATCHMAN_BUILD'
 
   have_header('ruby/st.h') # >= 1.9; sets HAVE_RUBY_ST_H

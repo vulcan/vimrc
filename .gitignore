@@ -1,3 +1,8 @@
 .hgignore
 .hg
 .vim*
+*.obj
+*.pdb
+*.def
+*.lib
+*.exp

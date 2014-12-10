@@ -4,93 +4,105 @@ SHELL = /bin/sh
 #### Start of system configuration section. ####
 
 srcdir = .
-topdir = /D/Ruby187/lib/ruby/1.8/i386-mingw32
-hdrdir = $(topdir)
-VPATH = $(srcdir):$(topdir):$(hdrdir)
+topdir = D:/Ruby192-mswin/include/ruby-1.9.1
+hdrdir = D:/Ruby192-mswin/include/ruby-1.9.1
+arch_hdrdir = D:/Ruby192-mswin/include/ruby-1.9.1/$(arch)
+VPATH = $(srcdir);$(arch_hdrdir)/ruby;$(hdrdir)/ruby
 
 DESTDIR = D:
+prefix = $(DESTDIR)/Ruby192-mswin
 exec_prefix = $(prefix)
-prefix = $(DESTDIR)/Ruby187
-sharedstatedir = $(prefix)/com
-mandir = $(datarootdir)/man
-psdir = $(docdir)
-oldincludedir = $(DESTDIR)/usr/include
-localedir = $(datarootdir)/locale
+rubylibprefix = $(prefix)/lib/$(RUBY_BASE_NAME)
 bindir = $(exec_prefix)/bin
-libexecdir = $(exec_prefix)/libexec
-sitedir = $(libdir)/ruby/site_ruby
-htmldir = $(docdir)
-vendorarchdir = $(vendorlibdir)/$(sitearch)
-includedir = $(prefix)/include
-infodir = $(datarootdir)/info
-vendorlibdir = $(vendordir)/$(ruby_version)
-sysconfdir = $(prefix)/etc
-libdir = $(exec_prefix)/lib
 sbindir = $(exec_prefix)/sbin
-rubylibdir = $(libdir)/ruby/$(ruby_version)
-docdir = $(datarootdir)/doc/$(PACKAGE)
-dvidir = $(docdir)
-vendordir = $(libdir)/ruby/vendor_ruby
-datarootdir = $(prefix)/share
-pdfdir = $(docdir)
+libexecdir = $(exec_prefix)/libexec
+datadir = $(prefix)/share
+sysconfdir = $(prefix)/etc
+sharedstatedir = $(DESTDIR)/etc
+localstatedir = $(DESTDIR)/var
+libdir = $(exec_prefix)/lib
+includedir = $(prefix)/include
+oldincludedir = $(DESTDIR)/usr/include
+infodir = $(datadir)/info
+mandir = $(datadir)/man
+ridir = $(datadir)/ri
+docdir = $(datadir)/doc/$(RUBY_BASE_NAME)
+sitedir = $(rubylibprefix)/site_ruby
+vendordir = $(rubylibprefix)/vendor_ruby
+rubyhdrdir = $(includedir)/$(RUBY_BASE_NAME)-$(ruby_version)
+sitehdrdir = $(rubyhdrdir)/site_ruby
+vendorhdrdir = $(rubyhdrdir)/vendor_ruby
+rubylibdir = $(rubylibprefix)/$(ruby_version)
 archdir = $(rubylibdir)/$(arch)
-sitearchdir = $(sitelibdir)/$(sitearch)
-datadir = $(datarootdir)
-localstatedir = $(prefix)/var
 sitelibdir = $(sitedir)/$(ruby_version)
+sitearchdir = $(sitelibdir)/$(sitearch)
+vendorlibdir = $(vendordir)/$(ruby_version)
+vendorarchdir = $(vendorlibdir)/$(sitearch)
 
-CC = gcc
-LIBRUBY = lib$(LIBRUBY_SO).a
-LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME)
-LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
+CC = cl -nologo
+CXX = $(CC)
+LIBRUBY = $(RUBY_SO_NAME).lib
+LIBRUBY_A = $(RUBY_SO_NAME)-static.lib
+LIBRUBYARG_SHARED = $(LIBRUBY)
+LIBRUBYARG_STATIC = $(LIBRUBY_A)
+OUTFLAG = -Fe
+COUTFLAG = -Fo
 
 RUBY_EXTCONF_H = 
-CFLAGS   =  -g -O2 -DFD_SETSIZE=256  $(cflags) 
-INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir)
+cflags   = 
+optflags = 
+debugflags = 
+warnflags = 
+CFLAGS   =  -MD -Zi -W2 -O2b2xg- -G6 -Zm600 
+INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
 DEFS     = 
-CPPFLAGS = -DHAVE_FCNTL_H  $(DEFS) $(cppflags)
-CXXFLAGS = $(CFLAGS) 
-ldflags  = -L. 
-dldflags =  -Wl,--enable-auto-image-base,--enable-auto-import,--export-all
-archflag = 
-DLDFLAGS = $(ldflags) $(dldflags) $(archflag)
-LDSHARED = gcc -shared -s
-AR = ar
+CPPFLAGS = -DHAVE_FCNTL_H   
+CXXFLAGS = $(CFLAGS) -MD -Zi -W2 -O2b2xg- -G6 -Zm600
+ldflags  = -incremental:no -debug -opt:ref -opt:icf
+dldflags = -incremental:no -debug -opt:ref -opt:icf -dll $(LIBPATH)
+ARCH_FLAG = 
+DLDFLAGS = $(ldflags) $(dldflags)
+LDSHARED = cl -nologo -LD
+LDSHAREDXX = $(LDSHARED)
+AR = lib -nologo
 EXEEXT = .exe
 
+RUBY_BASE_NAME = ruby
 RUBY_INSTALL_NAME = ruby
-RUBY_SO_NAME = msvcrt-ruby18
-arch = i386-mingw32
+RUBY_SO_NAME = msvcrt-ruby191
+arch = i386-mswin32
 sitearch = i386-msvcrt
-ruby_version = 1.8
-ruby = D:/Ruby187/bin/ruby
-RUBY = $(ruby)
-RM = rm -f
-MAKEDIRS = install -d
-INSTALL = /bin/install -c
+ruby_version = 1.9.1
+ruby = D:/Ruby192-mswin/bin/ruby
+RUBY = $(ruby:/=\)
+RM = $(RUBY) -run -e rm -- -f
+RM_RF = $(RUBY) -run -e rm -- -rf
+RMDIRS = $(RUBY) -run -e rmdir -- -p
+MAKEDIRS = @$(RUBY) -run -e mkdir -- -p
+INSTALL = @$(RUBY) -run -e install -- -vp
 INSTALL_PROG = $(INSTALL) -m 0755
-INSTALL_DATA = $(INSTALL) -m 644
-COPY = cp
+INSTALL_DATA = $(INSTALL) -m 0644
+COPY = @$(RUBY) -run -e cp -- -v
 
 #### End of system configuration section. ####
 
 preload = 
 
 libpath = . $(libdir)
-LIBPATH =  -L. -L$(libdir)
-DEFFILE = 
+LIBPATH =  -libpath:. -libpath:$(libdir)
+DEFFILE = $(TARGET)-$(arch).def
 
-CLEANFILES = mkmf.log
-DISTCLEANFILES = 
+CLEANFILES = mkmf.log $(DEFFILE)
+DISTCLEANFILES = vc*.pdb
+DISTCLEANDIRS = 
 
 extout = 
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = $(LIBRUBYARG_SHARED)  -lshell32 -lws2_32  
+LIBS = $(LIBRUBYARG_SHARED)  oldnames.lib user32.lib advapi32.lib shell32.lib ws2_32.lib  
 SRCS = ext.c match.c matcher.c watchman.c
-OBJS = ext.o match.o matcher.o watchman.o
+OBJS = ext.obj match.obj matcher.obj watchman.obj
 TARGET = ext
 DLLIB = $(TARGET).so
 EXTSTATIC = 
@@ -100,28 +112,40 @@ BINDIR        = $(bindir)
 RUBYCOMMONDIR = $(sitedir)$(target_prefix)
 RUBYLIBDIR    = $(sitelibdir)$(target_prefix)
 RUBYARCHDIR   = $(sitearchdir)$(target_prefix)
+HDRDIR        = $(rubyhdrdir)/ruby$(target_prefix)
+ARCHHDRDIR    = $(rubyhdrdir)/$(arch)/ruby$(target_prefix)
 
 TARGET_SO     = $(DLLIB)
-CLEANLIBS     = $(TARGET).so $(TARGET).il? $(TARGET).tds $(TARGET).map
-CLEANOBJS     = *.o *.a *.s[ol] *.pdb *.exp *.bak
+CLEANLIBS     = $(TARGET).so 
+CLEANOBJS     = *.obj $(TARGET)-$(arch).exp $(TARGET)-$(arch).lib $(TARGET)-$(arch).pdb *.bak
 
-all:		$(DLLIB)
-static:		$(STATIC_LIB)
+all:    $(DLLIB)
+static: $(STATIC_LIB)
+.PHONY: all install static install-so install-rb
+.PHONY: clean clean-so clean-rb
 
-clean:
-		@-$(RM) $(CLEANLIBS) $(CLEANOBJS) $(CLEANFILES)
+clean-rb-default::
+clean-rb::
+clean-so::
+clean: clean-so clean-rb-default clean-rb
+		@-$(RM) $(CLEANLIBS:/=\) $(CLEANOBJS:/=\) $(CLEANFILES:/=\)
 
-distclean:	clean
+distclean-rb-default::
+distclean-rb::
+distclean-so::
+distclean: clean distclean-so distclean-rb-default distclean-rb
 		@-$(RM) Makefile $(RUBY_EXTCONF_H) conftest.* mkmf.log
-		@-$(RM) core ruby$(EXEEXT) *~ $(DISTCLEANFILES)
+		@-$(RM) core ruby$(EXEEXT) *~ $(DISTCLEANFILES:/=\)
+		@-$(RMDIRS) $(DISTCLEANDIRS:/=\)
 
-realclean:	distclean
+realclean: distclean
 install: install-so install-rb
 
 install-so: $(RUBYARCHDIR)
 install-so: $(RUBYARCHDIR)/$(DLLIB)
 $(RUBYARCHDIR)/$(DLLIB): $(DLLIB)
-	$(INSTALL_PROG) $(DLLIB) $(RUBYARCHDIR)
+	@-$(MAKEDIRS) $(@D:/=\)
+	$(INSTALL_PROG) $(DLLIB:/=\) $(@D:/=\)
 install-rb: pre-install-rb install-rb-default
 install-rb-default: pre-install-rb-default
 pre-install-rb: Makefile
@@ -133,28 +157,67 @@ site-install: site-install-so site-install-rb
 site-install-so: install-so
 site-install-rb: install-rb
 
-.SUFFIXES: .c .m .cc .cxx .cpp .o
+.SUFFIXES: .c .m .cc .cxx .cpp .obj
 
-.cc.o:
-	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+{$(hdrdir)}.cc.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
 
-.cxx.o:
-	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+{$(topdir)}.cc.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
 
-.cpp.o:
-	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
+{$(srcdir)}.cc.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
 
-.c.o:
-	$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<
+.cc.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
 
-$(DLLIB): $(OBJS) Makefile
-	@-$(RM) $@
-	$(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
+{$(hdrdir)}.cxx.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(topdir)}.cxx.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(srcdir)}.cxx.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+.cxx.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(hdrdir)}.cpp.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(topdir)}.cpp.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(srcdir)}.cpp.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+.cpp.obj:
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tp$(<:\=/)
+
+{$(hdrdir)}.c.obj:
+	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tc$(<:\=/)
+
+{$(topdir)}.c.obj:
+	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tc$(<:\=/)
+
+{$(srcdir)}.c.obj:
+	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tc$(<:\=/)
+
+.c.obj:
+	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) $(COUTFLAG)$(@) -c -Tc$(<:\=/)
+
+$(DLLIB): $(DEFFILE) $(OBJS) Makefile
+	@-$(RM) $(@:/=\)
+	$(LDSHARED) -Fe$(@) $(OBJS) $(LIBS) $(LOCAL_LIBS) -link $(DLDFLAGS) -implib:$(*F:.so=)-$(arch).lib -pdb:$(*F:.so=)-$(arch).pdb -def:$(DEFFILE)
 
 
+
+$(DEFFILE): 
+	$(RUBY) -e "puts 'EXPORTS', 'Init_$(TARGET)'"  > $@
 
 ###
 # Copyright 2010-2014 Greg Hurrell. All rights reserved.
 # Licensed under the terms of the BSD 2-clause license.
 
-CFLAGS += -Wall -Wextra -Wno-unused-parameter
+#CFLAGS += -Wall -Wextra -Wno-unused-parameter
