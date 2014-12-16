@@ -1,4 +1,10 @@
 set nocompatible
+" test for the win32 platform
+if has("win32")
+	source $VIMRUNTIME/vimrc_example.vim
+	source $VIMRUNTIME/mswin.vim
+	behave mswin
+endif
 
 set diffexpr=MyDiff()
 function MyDiff()
@@ -82,6 +88,9 @@ set nocp
 filetype plugin on
 " set backup dir
 set backupdir=$HOME/.vimbak
+set dir=$HOME/.vimbak
+" set undodir=$HOME/.vimbak
+set noundofile
 " FreeMarker
 au BufNewFile,BufRead *.ftl	setf ftl.html
 set number
@@ -254,3 +263,4 @@ if has("cscope")
 endif
 set incsearch
 set hls
+let g:user_emmet_expandabbr_key='<C-e>'
