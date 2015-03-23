@@ -1,10 +1,4 @@
 set nocompatible
-" test for the win32 platform
-if has("win32")
-	source $VIMRUNTIME/vimrc_example.vim
-	source $VIMRUNTIME/mswin.vim
-	behave mswin
-endif
 
 set diffexpr=MyDiff()
 function MyDiff()
@@ -88,9 +82,6 @@ set nocp
 filetype plugin on
 " set backup dir
 set backupdir=$HOME/.vimbak
-set dir=$HOME/.vimbak
-" set undodir=$HOME/.vimbak
-set noundofile
 " FreeMarker
 au BufNewFile,BufRead *.ftl	setf ftl.html
 set number
@@ -206,8 +197,9 @@ autocmd FileType python map <buffer> <leader>r :w!<cr>:!python %<cr>
 " autocmd FileType python set makeprg=python\ %
 " autocmd FileType python set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 " use a python command wrapper
-autocmd FileType python set makeprg=pymake.py\ %
-autocmd FileType python set efm=\ \ File\ \"%f\"\\,\ line\ %l\\,\ in\ %*[^\\,]\\,\ %m
+" autocmd FileType python set makeprg=pymake.py\ %
+" autocmd FileType python set efm=\ \ File\ \"%f\"\\,\ line\ %l\\,\ in\ %*[^\\,]\\,\ %m
+autocmd FileType python :compiler python
 " auto reload the vimrc
 " autocmd! bufwritepost _vimrc source %
 " set PWD to home directory
@@ -252,6 +244,8 @@ autocmd FileType java let b:jcommenter_file_author='Alva Yi (alva.yi@gmail.com)'
 let g:JavaImpPaths=$VIM."/vimfiles/JavaImp"
 let g:Tlist_Ctags_Cmd='/usr/local/bin/ctags'
 map <leader>jb <Plug>JavagetsetInsertBothGetterSetter
+map <leader>jg <Plug>JavagetsetInsertGetterOnly
+map <leader>js <Plug>JavagetsetInsertSetterOnly
 " syntax
 syntax on
 " cscope
@@ -263,4 +257,25 @@ if has("cscope")
 endif
 set incsearch
 set hls
+" nmap scripts syntax
+au bufread,bufnewfile *.nse set syntax=lua
+" emmet expand key
 let g:user_emmet_expandabbr_key='<C-e>'
+" vim-plug
+call plug#begin('~/.vim/plugged')
+Plug 'jlanzarotta/bufexplorer'
+Plug 'ervandew/supertab'
+" installed as internal plugin
+" Plug 'scrooloose/nerdtree'
+" Plug 'scrooloose/nerdcommenter'
+" snipmate and it's dependency
+Plug 'MarcWeber/vim-addon-mw-utils'
+Plug 'tomtom/tlib_vim'
+Plug 'garbas/vim-snipmate'
+" others
+Plug 'elixir-lang/vim-elixir', {'for': 'elixir'}
+Plug 'harleypig/vcscommand.vim'
+Plug 'mattn/emmet-vim'
+" Plug 'tpope/vim-rails'
+call plug#end()
+map <leader>b :CtrlPBuffer<cr>
