@@ -238,6 +238,10 @@ map <leader>bf :CtrlPBuffer<cr>
 " acp and snipMate
 let g:acp_behaviorSnipmateLength = 1
 let g:acp_enableAtStartup = 0
+" ultiSnips settings
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " wild ignore
 set wildignore=bin/*,build/*,classes/*,*.jar,*.so,*.exe,*.dll,*.pyc,*.pyo,*.pyd
 " jcommenter
@@ -279,8 +283,8 @@ Plug 'ervandew/supertab'
 " snipmate and it's dependency
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
-" Plug 'garbas/vim-snipmate'
-Plug 'SirVer/ultisnips'
+Plug 'garbas/vim-snipmate'
+" Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 " others
 Plug 'elixir-lang/vim-elixir', {'for': 'elixir'}
@@ -291,5 +295,6 @@ Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh',
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
 Plug 'mxw/vim-jsx', {'for': 'js'}
+Plug 'ciaranm/detectindent'
 call plug#end()
 map <leader>b :CtrlPBuffer<cr>
