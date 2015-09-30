@@ -196,16 +196,18 @@ autocmd FileType python map <buffer> <leader><cr> :w!<cr>:make<cr>
 autocmd FileType python map <buffer> <leader>r :w!<cr>:!python %<cr>
 " autocmd FileType python set makeprg=python\ %
 " autocmd FileType python set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+autocmd FileType python compiler python
 " use a python command wrapper
 " autocmd FileType python set makeprg=pymake.py\ %
 " autocmd FileType python set efm=\ \ File\ \"%f\"\\,\ line\ %l\\,\ in\ %*[^\\,]\\,\ %m
-autocmd FileType python :compiler python
 " auto reload the vimrc
 " autocmd! bufwritepost _vimrc source %
 " set PWD to home directory
 " cd $HOME
 " javascript jquery syntax
 au BufRead,BufNewFile *.js set ft=javascript.jquery
+au BufRead,BufNewFile *.hbs set ft=html
+au BufRead,BufNewFile *.coffee set makeprg=coffee\ %
 " NERD_commenter settings
 let g:NERDMenuMode  = 0
 " show vcscommand menu
@@ -232,6 +234,7 @@ noremap <F12> <Esc>:syntax sync fromstart<CR>
 inoremap <F12> <C-o>:syntax sync fromstart<CR>
 " change TaskList plug default key map for the solve conflicks with command-T
 map <leader>tsk <Plug>TaskList
+map <leader>bf :CtrlPBuffer<cr>
 " acp and snipMate
 let g:acp_behaviorSnipmateLength = 1
 let g:acp_enableAtStartup = 0
@@ -257,10 +260,15 @@ if has("cscope")
 endif
 set incsearch
 set hls
-" nmap scripts syntax
-au bufread,bufnewfile *.nse set syntax=lua
+" nmap lua script
+au BufRead,BufNewFile *.nse set syntax=lua 
 " emmet expand key
 let g:user_emmet_expandabbr_key='<C-e>'
+" nodejs
+au BufRead,BufNewFile *.js map <buffer> <leader>r :w!<cr>:!node %<cr>
+" for coffee-script
+autocmd BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
+autocmd BufNewFile,BufReadPost *.coffee setl shiftwidth=2 expandtab
 " vim-plug
 call plug#begin('~/.vim/plugged')
 Plug 'jlanzarotta/bufexplorer'
@@ -272,10 +280,15 @@ Plug 'ervandew/supertab'
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'
+Plug 'honza/vim-snippets'
 " others
 Plug 'elixir-lang/vim-elixir', {'for': 'elixir'}
 Plug 'harleypig/vcscommand.vim'
 Plug 'mattn/emmet-vim'
 " Plug 'tpope/vim-rails'
+Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh', 'for': 'go' }
+Plug 'fatih/vim-go', {'for': 'go'}
+Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+Plug 'mxw/vim-jsx', {'for': 'js'}
 call plug#end()
 map <leader>b :CtrlPBuffer<cr>
