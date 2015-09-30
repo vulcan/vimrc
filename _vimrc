@@ -279,7 +279,8 @@ Plug 'ervandew/supertab'
 " snipmate and it's dependency
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'
+" Plug 'garbas/vim-snipmate'
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 " others
 Plug 'elixir-lang/vim-elixir', {'for': 'elixir'}
