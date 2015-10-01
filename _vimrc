@@ -300,6 +300,17 @@ Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
 " Plug 'pangloss/vim-javascript'
 " Plug 'mxw/vim-jsx'
+Plug 'easymotion/vim-easymotion'
 Plug 'ciaranm/detectindent'
 call plug#end()
 map <leader>b :CtrlPBuffer<cr>
+" easy motion multi search 
+map  <leader>/ <Plug>(easymotion-sn)
+omap <leader>/ <Plug>(easymotion-tn)
+"
+" These `n` & `N` mappings are options. You do not have to map `n` & `N` to
+" EasyMotion.
+" Without these mappings, `n` & `N` works fine. (These mappings just provide
+" different highlight method and have some other features )
+" map  n <Plug>(easymotion-next)
+" map  N <Plug>(easymotion-prev)
