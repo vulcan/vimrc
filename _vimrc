@@ -35,9 +35,9 @@ set wrap
 " au BufNewFile,BufRead *.html,*.htm set shiftwidth=4
 " au BufNewFile,BufRead *.c,*.h set shiftwidth=4
 " set the tabstop and shiftwidth to 4
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
+ set tabstop=4
+ set shiftwidth=4
+ set softtabstop=4
 " au BufRead,BufNewFile *.py,*.pyw,*.c,*.h set tabstop=4
 " expand tab
 " python yes
@@ -273,6 +273,8 @@ au BufRead,BufNewFile *.js map <buffer> <leader>r :w!<cr>:!node %<cr>
 " for coffee-script
 autocmd BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
 autocmd BufNewFile,BufReadPost *.coffee setl shiftwidth=2 expandtab
+" jsx support
+let g:jsx_ext_required = 0
 " vim-plug
 call plug#begin('~/.vim/plugged')
 Plug 'jlanzarotta/bufexplorer'
@@ -294,7 +296,8 @@ Plug 'mattn/emmet-vim'
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh', 'for': 'go' }
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
-Plug 'mxw/vim-jsx', {'for': 'js'}
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
 Plug 'ciaranm/detectindent'
 call plug#end()
 map <leader>b :CtrlPBuffer<cr>
