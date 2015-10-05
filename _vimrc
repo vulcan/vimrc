@@ -117,11 +117,13 @@ let &termencoding=&encoding
 " :vmap cx :s/^\/\///g<CR>
 " auto close the matched parenthese
 :inoremap ( ()<ESC>i
+:inoremap (<cr> ()<esc>i<cr><esc>:let leavechar=")"<cr>O
 :inoremap ) <c-r>=ClosePair(')')<CR>
 :inoremap { {}<ESC>i
 :inoremap {<cr> {}<esc>i<cr><esc>:let leavechar="}"<cr>O
 :inoremap } <c-r>=ClosePair('}')<CR>
 :inoremap [ []<ESC>i
+:inoremap [<cr> []<esc>i<cr><esc>:let leavechar="]"<cr>O
 :inoremap ] <c-r>=ClosePair(']')<CR>
 
 function ClosePair(char)
