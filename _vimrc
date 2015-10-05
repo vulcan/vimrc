@@ -58,7 +58,7 @@ filetype indent on
 
 " keep indentation level from previous line:
 set autoindent
-" set cindent
+set cindent
 set smartindent
 " set smartcase
 " set smarttab
@@ -119,7 +119,7 @@ let &termencoding=&encoding
 :inoremap ( ()<ESC>i
 :inoremap ) <c-r>=ClosePair(')')<CR>
 :inoremap { {}<ESC>i
-:inoremap {<cr> {<esc>o}<esc>:let leavechar="}"<cr>O
+:inoremap {<cr> {}<esc>i<cr><esc>:let leavechar="}"<cr>O
 :inoremap } <c-r>=ClosePair('}')<CR>
 :inoremap [ []<ESC>i
 :inoremap ] <c-r>=ClosePair(']')<CR>
@@ -301,7 +301,7 @@ Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
 " Plug 'pangloss/vim-javascript'
 " Plug 'mxw/vim-jsx'
 Plug 'easymotion/vim-easymotion'
-Plug 'ciaranm/detectindent'
+" Plug 'ciaranm/detectindent'
 call plug#end()
 map <leader>b :CtrlPBuffer<cr>
 " easy motion multi search 
