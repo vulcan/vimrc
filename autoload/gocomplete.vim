@@ -1,1 +1,1 @@
-/Users/alva/.vim/plugged/gocode/vim/autoload/gocomplete.vim
+/home/vulcan/.vim/plugged/gocode/vim/autoload/gocomplete.vim

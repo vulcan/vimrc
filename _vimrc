@@ -199,6 +199,7 @@ autocmd FileType python map <buffer> <leader>r :w!<cr>:!python %<cr>
 " autocmd FileType python set makeprg=python\ %
 " autocmd FileType python set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 autocmd FileType python compiler python
+autocmd FileType python nnoremap <buffer> H :<C-u>execute "!pydoc3 " . expand("<cword>")<CR>
 " use a python command wrapper
 " autocmd FileType python set makeprg=pymake.py\ %
 " autocmd FileType python set efm=\ \ File\ \"%f\"\\,\ line\ %l\\,\ in\ %*[^\\,]\\,\ %m
@@ -316,3 +317,5 @@ omap <leader>/ <Plug>(easymotion-tn)
 " different highlight method and have some other features )
 " map  n <Plug>(easymotion-next)
 " map  N <Plug>(easymotion-prev)
+" change ESC key when in ipad 
+inoremap <leader>q <Esc><Esc>
